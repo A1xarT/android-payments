@@ -10,9 +10,14 @@
 Here we use simulated credit card reader for testing the application behavior.
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/8beebf08-d9d3-4b98-93b1-07acb5509a0b)
 Fill the Cart configuration and set the card reader display.
+
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/56c080fc-37aa-417b-8a1c-eebb43b1ec09)
+
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/4d8c9c8c-0112-4ecd-8396-152485cd3e87)
+
 Once payment is initiated and proceeded through a credit card reader, result including receipt will appear.
+
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/3bd0bcd8-6027-4e61-9de5-4cc9f2ec78c1)
+
 Stripe dashboard updates as well.
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/1a40da8d-6813-446c-8b2a-7c76fbcf1568)
