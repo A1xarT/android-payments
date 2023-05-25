@@ -15,7 +15,7 @@ Fill the Cart configuration and set the card reader display.
 
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/4d8c9c8c-0112-4ecd-8396-152485cd3e87)
 
-Once payment is initiated and proceeded through a credit card reader, result including receipt will appear.
+Once the payment is initiated and proceeded through a credit card reader, the resulting data flow, including the receipt, are generated.
 
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/3bd0bcd8-6027-4e61-9de5-4cc9f2ec78c1)
 
