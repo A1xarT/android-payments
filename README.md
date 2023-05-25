@@ -5,7 +5,7 @@
 
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/a356fca1-8462-4de0-bd93-8c04d9aedc85)
 
-# Using Terminal Api
+# Using Terminal API
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/3ca1a498-529a-4de4-b84c-fc49ca55c188)
 Here we use simulated credit card reader for testing the application behavior.
 ![image](https://github.com/A1xarT/android-stripe-payments/assets/40519032/8beebf08-d9d3-4b98-93b1-07acb5509a0b)
