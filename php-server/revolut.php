@@ -1,19 +1,16 @@
 <?php
-
 $curl = curl_init();
-
 $secretApiKey = 'sk_cto-vpXtVEtkoP1yG8qXfq5pS793P4wDW-2UVf6hZD1KGCMUOqsfQYIqYtAX2q00';
 $expectedPublicKey = 'pk_Ic0nbOyZOR4ZYaiK6TWPENch9un5pkBoIEl411bYrPWwwW7O';
 
 // Check if the Authorization header is set
-if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+if (isset($_SERVER['HTTP_AUTH'])) {
   // Extract the API key from the Authorization header
-  $apiKey = trim(str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION']));
+  $apiKey = $_SERVER['HTTP_AUTH'];
 
   // Check if the API key matches the expected public API key
   if ($apiKey === $expectedPublicKey) {
     // API key is valid, proceed with processing the request
-    echo 'API key is valid. Proceed with processing the request.';
     curl_setopt_array(
       $curl,
       array(
