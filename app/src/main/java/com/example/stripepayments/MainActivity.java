@@ -1,21 +1,24 @@
 package com.example.stripepayments;
 
-import androidx.appcompat.app.AppCompatActivity;
+import static com.revolut.revolutpay.api.RevolutPayKt.createController;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.revolut.revolutpay.api.OrderResultCallback;
 import com.revolut.revolutpay.api.RevolutPay;
 import com.revolut.revolutpay.api.RevolutPayEnvironment;
 import com.revolut.revolutpay.api.RevolutPayExtensionsKt;
-import com.revolut.revolutpay.api.RevolutPayKt;
-import com.revolut.revolutpay.data.RevolutPayService;
+import com.revolut.revolutpay.ui.button.Controller;
 import com.revolut.revolutpay.ui.button.RevolutPayButton;
 import com.revolut.revolutpayments.RevolutPayments;
 import com.stripe.android.PaymentConfiguration;
@@ -25,7 +28,6 @@ import com.stripe.android.paymentsheet.PaymentSheetResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,14 +36,16 @@ public class MainActivity extends AppCompatActivity {
 
     PaymentSheet paymentSheet;
     String paymentIntentClientSecret;
+    String revolutOrderId;
     PaymentSheet.CustomerConfiguration configuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fetchStripeApi();
+        // Stripe button
         Button stripeButton = findViewById(R.id.pay_stripe);
+        paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         stripeButton.setOnClickListener(v -> {
             fetchStripeApi();
             if (paymentIntentClientSecret != null) {
@@ -50,45 +54,54 @@ public class MainActivity extends AppCompatActivity {
             } else
                 Toast.makeText(getApplicationContext(), "API Loading ...", Toast.LENGTH_SHORT).show();
         });
-        paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
-        revolutButton();
-    }
-    private void revolutButton(){
-        String merchantPublicKey = "pk_Ic0nbOyZOR4ZYaiK6TWPENch9un5pkBoIEl411bYrPWwwW7O";
-        Uri returnUri = Uri.parse("return_uri_scheme://return_uri_host");
+
+        // Revolut button
+        RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
-        revolutPay.init(RevolutPayEnvironment.SANDBOX, returnUri , merchantPublicKey, true, null);
-        RevolutPayButton revolutPayButton = findViewById(R.id.revolut_pay_button);
-        // setting click handler
-
-        RevolutPayKt.createController(revolutPayButton).setHandler(flow -> {
-            flow.setOrderToken();
-            flow.attachLifecycle(getLifecycle());
-            flow.continueConfirmationFlow();
+        Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
+        revolutPay.init(RevolutPayEnvironment.SANDBOX, returnUri, BuildConfig.REVOLUT_MERCHANT_API_KEY, false, null);
+        Controller controller = createController(revolutButton);
+        controller.setHandler(flow -> {
+            if (revolutOrderId != null) {
+                flow.setOrderToken(revolutOrderId);
+                flow.attachLifecycle(this.getLifecycle());
+                flow.continueConfirmationFlow();
+            } else {
+                fetchRevolutApi();
+                Toast.makeText(getApplicationContext(), "API Loading ...", Toast.LENGTH_SHORT).show();
+            }
+            return null;
         });
+        controller.setOrderResultCallback(new OrderResultCallback() {
+            @Override
+            public void onOrderCompleted() {
+                revolutOrderId = null;
+            }
 
+            @Override
+            public void onOrderFailed(@NonNull Throwable throwable) {
+                revolutOrderId = null;
+            }
+        });
     }
-    private void makeOrderRevolut(){
+
+    private void fetchRevolutApi() {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
-        String url = "https://php-api-stripe.000webhostapp.com/php-server//revolut.php";
+        String url = BuildConfig.REVOLUT_API_URL;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     try {
                         JSONObject jsonObject = new JSONObject(response);
-                        configuration = new PaymentSheet.CustomerConfiguration(
-                                jsonObject.getString("customer"),
-                                jsonObject.getString("ephemeralKey")
-                        );
-                        paymentIntentClientSecret = jsonObject.getString("paymentIntent");
-                        PaymentConfiguration.init(getApplicationContext(), jsonObject.getString("publishableKey"));
+                        revolutOrderId = jsonObject.getString("public_id");
                     } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                        Toast.makeText(this, "Json Exception", Toast.LENGTH_SHORT).show();
+//                        throw new RuntimeException(e);
                     }
                 }, Throwable::printStackTrace) {
-            protected Map<String, String> getParams() {
+            public Map<String, String> getHeaders() {
                 Map<String, String> paramV = new HashMap<>();
-                paramV.put("authKey", "abc");
+                paramV.put("AUTH", BuildConfig.REVOLUT_MERCHANT_API_KEY);
                 return paramV;
             }
         };
@@ -112,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     public void fetchStripeApi() {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
-        String url = "https://php-api-stripe.000webhostapp.com/php-server//index.php";
+        String url = BuildConfig.STRIPE_API_URL;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     try {
@@ -129,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 }, Throwable::printStackTrace) {
             protected Map<String, String> getParams() {
                 Map<String, String> paramV = new HashMap<>();
-                paramV.put("authKey", "abc");
+                paramV.put("authKey", BuildConfig.STRIPE_AUTH_KEY);
                 return paramV;
             }
         };
