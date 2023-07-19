@@ -9,10 +9,22 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/pay_now"
+        android:id="@+id/pay_stripe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pay now"
+        android:text="Pay with Stripe"
         />
+
+    <com.revolut.revolutpay.ui.button.RevolutPayButton
+        android:id="@+id/revolut_pay_button"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        app:revolutPay_BoxText="GetCashbackValue"
+        app:revolutPay_BoxTextCurrency="GBP"
+        app:revolutPay_BoxTextValue="Medium"
+        app:revolutPay_Radius="Medium"
+        app:revolutPay_Size="Large"
+        app:revolutPay_VariantDarkTheme="Dark"
+        app:revolutPay_VariantLightTheme="Light" />
 
 </LinearLayout>
