@@ -8,13 +8,6 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/pay_stripe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pay with Stripe"
-        />
-
     <com.revolut.revolutpay.ui.button.RevolutPayButton
         android:id="@+id/revolut_pay_button"
         android:layout_width="wrap_content"
@@ -26,5 +19,17 @@
         app:revolutPay_Size="Large"
         app:revolutPay_VariantDarkTheme="Dark"
         app:revolutPay_VariantLightTheme="Light" />
+
+    <Button
+        android:id="@+id/pay_stripe"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Pay with Stripe" />
+
+    <Button
+        android:id="@+id/pay_hp"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Pay with Handpoint" />
 
 </LinearLayout>

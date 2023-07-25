@@ -43,7 +43,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Stripe button
+        setStripeButton();
+        setRevolutButton();
+        setHandpointButton();
+    }
+
+    private void setHandpointButton() {
+        Button handpointButton = findViewById(R.id.pay_hp);
+
+    }
+
+    private void setStripeButton(){
         Button stripeButton = findViewById(R.id.pay_stripe);
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         stripeButton.setOnClickListener(v -> {
@@ -54,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
             } else
                 Toast.makeText(getApplicationContext(), "API Loading ...", Toast.LENGTH_SHORT).show();
         });
-
-        // Revolut button
+    }
+    private void setRevolutButton(){
         RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
         Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
