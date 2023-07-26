@@ -1,6 +1,6 @@
 [Revolut](https://www.revolut.com/) payments integration (sandbox)
 
-#Android demo
+# Android demo
 
 ![image](https://github.com/A1xarT/android-payments/assets/40519032/d8c31d2a-2576-433d-8a04-149b3cceba6e)
 
