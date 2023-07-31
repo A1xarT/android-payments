@@ -5,6 +5,8 @@ import static com.revolut.revolutpay.api.RevolutPayKt.createController;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.revolut.revolutpay.api.OrderResultCallback;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         setStripeButton();
         setRevolutButton();
         setHandpointButton();
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setStripeButton(){
+    private void setStripeButton() {
         Button stripeButton = findViewById(R.id.pay_stripe);
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         stripeButton.setOnClickListener(v -> {
@@ -65,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "API Loading ...", Toast.LENGTH_SHORT).show();
         });
     }
-    private void setRevolutButton(){
+
+    private void setRevolutButton() {
         RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
         Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
@@ -99,26 +104,45 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
         String url = BuildConfig.REVOLUT_API_URL;
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+        // Prepare the request data as a JSONObject
+        int amount = Integer.parseInt(((EditText) findViewById(R.id.amount)).getText().toString());
+        String description = ((EditText) findViewById(R.id.description)).getText().toString();
+        String currency = ((Spinner) findViewById(R.id.currencySpinner)).getSelectedItem().toString();
+
+        JSONObject requestData = new JSONObject();
+        try {
+            requestData.put("amount", amount);
+            requestData.put("currency", currency);
+            requestData.put("description", description);
+        } catch (JSONException exception) {
+            exception.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, requestData,
                 response -> {
                     try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        revolutOrderId = jsonObject.getString("public_id");
+                        revolutOrderId = response.getString("public_id");
                     } catch (JSONException e) {
+                        e.printStackTrace();
                         Toast.makeText(this, "Json Exception", Toast.LENGTH_SHORT).show();
-//                        throw new RuntimeException(e);
                     }
-                }, Throwable::printStackTrace) {
+                },
+                error -> {
+                    // Handle Volley error
+                    error.printStackTrace();
+                }) {
+            @Override
             public Map<String, String> getHeaders() {
-                Map<String, String> paramV = new HashMap<>();
-                paramV.put("AUTH", BuildConfig.REVOLUT_MERCHANT_API_KEY);
-                return paramV;
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("AUTH", BuildConfig.REVOLUT_MERCHANT_API_KEY);
+                return headers;
             }
         };
-        stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        jsonObjectRequest.setShouldCache(false);
+        queue.add(jsonObjectRequest);
         queue.getCache().remove(url);
     }
+
 
     private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {

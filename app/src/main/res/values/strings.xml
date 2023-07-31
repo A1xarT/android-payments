@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Stripe Payments</string>
+    <string name="description">description</string>
+    <string name="amount">amount</string>
+    <string name="pay_with_stripe">Pay with Stripe</string>
+    <string name="pay_with_handpoint">Pay with Handpoint</string>
+    <string name="usd">USD</string>
+    <string name="_10">10</string>
+    <string name="test">test</string>
+
+    <string-array name="currencies">
+        <item>USD</item>
+        <item>GBP</item>
+        <item>EUR</item>
+        <!-- Add more currencies here if needed -->
+    </string-array>
+
 </resources>
