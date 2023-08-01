@@ -1,3 +1,17 @@
+[Revolut](https://www.revolut.com/) payments integration (sandbox)
+
+# Android demo
+
+![image](https://github.com/A1xarT/android-payments/assets/40519032/d8c31d2a-2576-433d-8a04-149b3cceba6e)
+
+Sandbox account after payment:
+
+![image](https://github.com/A1xarT/android-payments/assets/40519032/818648c1-0b2e-40b4-87de-beb5eb63d677)
+
+Menu with saved methods:
+
+![image](https://github.com/A1xarT/android-payments/assets/40519032/5ebca955-630a-4b7e-a9bf-9a05b10bb3c4)
+
 [Stripe](https://dashboard.stripe.com) payments integration (test mode)
 # Android demo
 
