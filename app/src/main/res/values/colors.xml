@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey_custom">#f7f6f2</color>
+
+    <color name="colorPrimary">#f7f6f2</color>
+    <color name="colorOfStatusBar">#1e1e1e</color>
+    <color name="colorAccent">#f7f6f2</color>
+
 </resources>

@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Stripe Payments"
+rootProject.name = "AndroidPaymentApp"
 include ':app'
 include ':payment'

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.example.stripepayments'
+    namespace 'com.example.AndroidPaymentApp'
     compileSdkVersion 34
 
     defaultConfig {

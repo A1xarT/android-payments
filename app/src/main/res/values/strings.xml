@@ -7,6 +7,8 @@
     <string name="usd">USD</string>
     <string name="_10">10</string>
     <string name="test">test</string>
+    <string name="create_payment">Create payment</string>
+    <string name="add_amount">Add amount</string>
 
     <string-array name="currencies">
         <item>USD</item>
@@ -14,5 +16,4 @@
         <item>EUR</item>
         <!-- Add more currencies here if needed -->
     </string-array>
-
 </resources>

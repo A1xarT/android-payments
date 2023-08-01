@@ -13,13 +13,13 @@ android {
         buildConfig = true
     }
 
-    namespace 'com.example.stripepayments'
+    namespace 'com.example.AndroidPaymentApp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.stripepayments"
+        applicationId "com.example.AndroidPaymentApp"
         minSdk 24
-        targetSdk 34
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
