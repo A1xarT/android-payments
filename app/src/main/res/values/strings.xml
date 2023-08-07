@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stripe Payments</string>
+    <string name="app_name">AndroidPaymentApp</string>
     <string name="description">description</string>
     <string name="amount">amount</string>
     <string name="pay_with_stripe">Pay with Stripe</string>

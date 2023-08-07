@@ -16,5 +16,6 @@
 local.properties
 
 # Files with sensitive info
-app/keys.properties
+app/*keys*.properties
 php-server/
+images/

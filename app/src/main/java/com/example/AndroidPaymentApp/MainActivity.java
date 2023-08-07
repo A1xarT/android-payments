@@ -7,9 +7,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,15 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.revolut.revolutpay.api.OrderResultCallback;
 import com.revolut.revolutpay.api.RevolutPay;
 import com.revolut.revolutpay.api.RevolutPayEnvironment;
 import com.revolut.revolutpay.api.RevolutPayExtensionsKt;
-import com.revolut.revolutpay.ui.button.Controller;
 import com.revolut.revolutpay.ui.button.RevolutPayButton;
+import com.revolut.revolutpay.ui.button.RevolutPayButtonController;
 import com.revolut.revolutpayments.RevolutPayments;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
@@ -40,7 +38,28 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.os.Handler;
+import android.os.Looper;
+
+
 public class MainActivity extends AppCompatActivity {
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable timeoutRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // This method will be executed when the server does not respond in 5 seconds
+            showTimeoutMessage();
+        }
+    };
+    private void showTimeoutMessage() {
+        showMessage("Server request timeout. Try again later");
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        isLoadingRevolutApi = false;
+    }
+
 
 
     PaymentSheet paymentSheet;
@@ -49,14 +68,27 @@ public class MainActivity extends AppCompatActivity {
     boolean isLoadingRevolutApi;
     PaymentSheet.CustomerConfiguration configuration;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        setBackButton();
         setRevolutButton();
+        setContinueButton();
 //        setStripeButton();
 //        setHandpointButton();
+    }
+
+    private void setBackButton() {
+        ImageView backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            onBackPressed();
+        });
+    }
+
+    private void setContinueButton() {
+
     }
 
 //    private void setHandpointButton() {
@@ -83,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
         RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
         Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
-        revolutPay.init(RevolutPayEnvironment.SANDBOX, returnUri, BuildConfig.REVOLUT_MERCHANT_API_KEY, false, null);
-        Controller controller = createController(revolutButton);
+        revolutPay.init(RevolutPayEnvironment.MAIN, returnUri, BuildConfig.REVOLUT_MERCHANT_API_KEY, false, null);
+        RevolutPayButtonController controller = createController(revolutButton);
         controller.setHandler(flow -> {
             if (revolutOrderId != null) {
                 flow.setOrderToken(revolutOrderId);
@@ -102,7 +134,9 @@ public class MainActivity extends AppCompatActivity {
                             flow.continueConfirmationFlow();
                         }
                     });
-                    Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                    if (isLoadingRevolutApi) {
+                        Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
             return null;
@@ -111,10 +145,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOrderCompleted() {
                 revolutOrderId = null;
+                onBackPressed();
             }
 
             @Override
             public void onOrderFailed(@NonNull Throwable throwable) {
+                onBackPressed();
                 revolutOrderId = null;
             }
         });
@@ -163,12 +199,27 @@ public class MainActivity extends AppCompatActivity {
         void onApiLoaded(String revolutOrderId);
     }
 
+    private void notValidNumber() {
+        Toast.makeText(this, "Please, enter valid number", Toast.LENGTH_SHORT).show();
+        isLoadingRevolutApi = false;
+    }
+
     private void fetchRevolutApi(ApiLoadCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
         String url = BuildConfig.REVOLUT_API_URL;
         // Prepare the request data as key-value pairs
-        int amount = Integer.parseInt(((EditText) findViewById(R.id.amount)).getText().toString().replaceAll("[,.]", ""));
+        int amount = 0;
+        try {
+            amount = (int) (Double.parseDouble(((EditText) findViewById(R.id.amount)).getText().toString()) * 100);
+        } catch (Exception e) {
+            notValidNumber();
+            return;
+        }
+        if (amount <= 0) {
+            notValidNumber();
+            return;
+        }
         String description = ((EditText) findViewById(R.id.description)).getText().toString();
         String currency = "USD";
 
@@ -180,6 +231,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String finalRequestData = requestData;
+
+        handler.postDelayed(timeoutRunnable, 7000);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     try {
@@ -191,10 +244,13 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Err", response);
                         Toast.makeText(this, "Json Exception", Toast.LENGTH_SHORT).show();
                     }
+                    handler.removeCallbacks(timeoutRunnable);
                 },
                 error -> {
                     // Handle Volley error
                     error.printStackTrace();
+                    handler.removeCallbacks(timeoutRunnable);
+                    showMessage("Server request failed.");
                 }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -218,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
         queue.add(stringRequest);
         queue.getCache().remove(url);
     }
-
 
 
     private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {

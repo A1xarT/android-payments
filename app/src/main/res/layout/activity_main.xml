@@ -1,123 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
     android:background="@color/grey_custom"
-    android:gravity="top|center"
     android:orientation="vertical"
     tools:context=".MainActivity">
-
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/back_button"
+        android:id="@+id/back_button"
+        />
     <TextView
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="50dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginStart="100dp"
         android:id="@+id/text_view_id"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
         android:text="@string/add_amount"
+        android:textColor="@color/black"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textStyle="bold" />
 
-        />
-    <TextView
-        android:layout_marginEnd="140dp"
-        android:layout_marginBottom="5dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="Amount"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        />
-
-    <EditText
-        android:background="@drawable/et_cust"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/amount"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:hint="00.00"/>
-
-    <TextView
-        android:layout_marginStart="-78dp"
-        android:layout_marginBottom="5dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="Transaction comment"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-
-        />
-    <EditText
-        android:background="@drawable/et_cust"
-        android:id="@+id/description"
-        android:layout_width="350dp"
-        android:layout_height="100dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="15dp"
-        android:hint="Transaction comment"
-        android:gravity="left"
-        android:paddingTop="5dp"
-        />
-
-    <TextView
-        android:layout_marginStart="-100dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:text="Selected method"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-
-        />
-
-    <com.revolut.revolutpay.ui.button.RevolutPayButton
-        android:id="@+id/revolut_pay_button"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="-51dp"
-        app:revolutPay_BoxText="None"
-        app:revolutPay_BoxTextCurrency="USD"
-        app:revolutPay_BoxTextValue="High"
-        app:revolutPay_Radius="Small"
-        app:revolutPay_Size="Large"
-        app:revolutPay_VariantDarkTheme="DarkOutlined"
-        app:revolutPay_VariantLightTheme="DarkOutlined" />
-
-    <!--    <Button-->
-<!--        android:id="@+id/pay_stripe"-->
-<!--        android:layout_width="200dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:text="@string/pay_with_stripe" />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/pay_hp"-->
-<!--        android:layout_width="200dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:text="@string/pay_with_handpoint" />-->
     <LinearLayout
+        android:layout_marginTop="150dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|bottom"
-        >
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_marginBottom="20dp"
-            android:layout_gravity="bottom"
-            android:id="@+id/continue_button"
-            android:background="@drawable/button"
-            android:layout_width="350dp"
-            android:layout_height="50dp"
-            android:text="Continue"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            />
-    </LinearLayout>
 
-</LinearLayout>
+        android:background="@color/grey_custom"
+        android:gravity="top|center"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="140dp"
+            android:layout_marginBottom="5dp"
+            android:text="Amount"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/et_cust"
+            android:hint="00.00" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-78dp"
+            android:layout_marginBottom="5dp"
+            android:text="Transaction comment"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+
+            />
+
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="350dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/et_cust"
+            android:gravity="left"
+            android:hint="Transaction comment"
+            android:paddingTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-68dp"
+            android:layout_marginBottom="12dp"
+            android:text="Select payment method"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+
+            />
+
+        <com.revolut.revolutpay.ui.button.RevolutPayButton
+            android:id="@+id/revolut_pay_button"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="-51dp"
+            app:revolutPay_BoxText="None"
+            app:revolutPay_BoxTextCurrency="USD"
+            app:revolutPay_BoxTextValue="High"
+            app:revolutPay_Radius="Small"
+            app:revolutPay_Size="Large"
+            app:revolutPay_VariantDarkTheme="DarkOutlined"
+            app:revolutPay_VariantLightTheme="DarkOutlined" />
+
+        <!--    <Button-->
+        <!--        android:id="@+id/pay_stripe"-->
+        <!--        android:layout_width="200dp"-->
+        <!--        android:layout_height="50dp"-->
+        <!--        android:text="@string/pay_with_stripe" />-->
+
+        <!--    <Button-->
+        <!--        android:id="@+id/pay_hp"-->
+        <!--        android:layout_width="200dp"-->
+        <!--        android:layout_height="50dp"-->
+        <!--        android:text="@string/pay_with_handpoint" />-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center|bottom">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/continue_button"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/black_button"
+                android:text="Continue"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

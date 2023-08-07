@@ -1,6 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/grey_custom"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/back_button"
+        android:id="@+id/back_button_merchant"
+        />
+    <TextView
+        android:layout_marginStart="100dp"
+        android:id="@+id/text_view_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
+        android:text="Merchant key change"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_marginTop="150dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="@color/grey_custom"
+        android:gravity="top|center"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="123dp"
+            android:layout_marginBottom="5dp"
+            android:text="Current key"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/amount"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/et_cust"
+            android:textSize="20dp"
+            android:text="@string/REVOLUT_MERCHANT_API_KEY" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-100dp"
+            android:layout_marginBottom="5dp"
+            android:text="Select a new key"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/select_key"
+            android:paddingLeft="10dp"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/et_cust"
+            android:textSize="20dp"
+            android:hint="Select a new key from the database"
+            android:paddingTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-60dp"
+            android:layout_marginBottom="5dp"
+            android:text="Manually enter a new key"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:id="@+id/enter_new_key"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/et_cust"
+            android:gravity="left"
+            android:hint=""
+            android:paddingTop="5dp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center|bottom"
+            >
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel_button"
+                android:layout_marginRight="5dp"
+                android:layout_width="172dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/white_button"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="22dp"
+                />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/continue_button"
+                android:layout_marginLeft="5dp"
+                android:layout_width="172dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/black_button"
+                android:text="Continue"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="22dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
