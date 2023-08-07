@@ -1,10 +1,10 @@
 plugins {
     id 'com.android.application'
 }
-
+def keysDestination = "app/keysProd.properties"
 def apikeyProperties = new Properties()
-if(rootProject.file("app/keys.properties").exists()){
-    apikeyProperties.load(rootProject.file("app/keysProd.properties").newDataInputStream())
+if(rootProject.file(keysDestination).exists()){
+    apikeyProperties.load(rootProject.file(keysDestination).newDataInputStream())
 }
 
 
