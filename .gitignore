@@ -19,3 +19,4 @@ local.properties
 app/*keys*.properties
 php-server/
 images/
+*.pem

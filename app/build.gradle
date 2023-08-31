@@ -9,6 +9,9 @@ if(rootProject.file(keysDestination).exists()){
 
 
 android {
+    configurations{
+        all*.exclude module: 'bcprov-jdk15on'
+    }
     buildFeatures {
         buildConfig = true
     }
@@ -17,6 +20,7 @@ android {
     compileSdk 34
 
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.example.AndroidPaymentApp"
         minSdk 24
         targetSdk 34
@@ -25,7 +29,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "REVOLUT_API_URL", apikeyProperties['REVOLUT_API_URL'])
+        buildConfigField("String", "REVOLUT_API_KEYED_URL", apikeyProperties['REVOLUT_API_KEYED_URL'])
         buildConfigField("String", "REVOLUT_MERCHANT_API_KEY", apikeyProperties['REVOLUT_MERCHANT_API_KEY'])
+        buildConfigField("String", "REVOLUT_AUTH_KEY", apikeyProperties['REVOLUT_AUTH_KEY'])
         buildConfigField("String", "STRIPE_API_URL", apikeyProperties['STRIPE_API_URL'])
         buildConfigField("String", "STRIPE_AUTH_KEY", apikeyProperties['STRIPE_AUTH_KEY'])
         resValue "string", "REVOLUT_MERCHANT_API_KEY", apikeyProperties['REVOLUT_MERCHANT_API_KEY']
@@ -33,13 +39,14 @@ android {
 
     buildTypes {
         release {
+            crunchPngs false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
@@ -56,11 +63,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-
-
 }

@@ -3,8 +3,10 @@
  */
 package com.handpoint.payment;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+
+import androidx.annotation.NonNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

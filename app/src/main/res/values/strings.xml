@@ -9,6 +9,8 @@
     <string name="test">test</string>
     <string name="create_payment">Create payment</string>
     <string name="add_amount">Add amount</string>
+    <string name="delete_key">Delete key</string>
+    <string name="select_a_new_key">Select a new key</string>
 
     <string-array name="currencies">
         <item>USD</item>

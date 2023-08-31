@@ -2,10 +2,14 @@ package com.example.AndroidPaymentApp;
 
 import static com.revolut.revolutpay.api.RevolutPayKt.createController;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +23,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.revolut.revolutpay.api.OrderResultCallback;
 import com.revolut.revolutpay.api.RevolutPay;
 import com.revolut.revolutpay.api.RevolutPayEnvironment;
@@ -33,17 +38,20 @@ import com.stripe.android.paymentsheet.PaymentSheetResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
-import android.os.Handler;
-import android.os.Looper;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
+    private KeysEntity revolutApiKeys = null;
     private Runnable timeoutRunnable = new Runnable() {
         @Override
         public void run() {
@@ -51,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             showTimeoutMessage();
         }
     };
+
     private void showTimeoutMessage() {
         showMessage("Server request timeout. Try again later");
     }
@@ -59,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         isLoadingRevolutApi = false;
     }
-
 
 
     PaymentSheet paymentSheet;
@@ -73,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadPreferences();
         setBackButton();
         setRevolutButton();
         setContinueButton();
@@ -112,10 +121,13 @@ public class MainActivity extends AppCompatActivity {
     private void setRevolutButton() {
         isLoadingRevolutApi = false;
         revolutOrderId = null;
+        String public_key = BuildConfig.REVOLUT_MERCHANT_API_KEY;
+        if (revolutApiKeys != null)
+            public_key = revolutApiKeys.getPublicKey();
         RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
         Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
-        revolutPay.init(RevolutPayEnvironment.MAIN, returnUri, BuildConfig.REVOLUT_MERCHANT_API_KEY, false, null);
+        revolutPay.init(RevolutPayEnvironment.MAIN, returnUri, public_key, false, null);
         RevolutPayButtonController controller = createController(revolutButton);
         controller.setHandler(flow -> {
             if (revolutOrderId != null) {
@@ -125,15 +137,19 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 if (!isLoadingRevolutApi) {
                     isLoadingRevolutApi = true;
-                    fetchRevolutApi(orderId -> {
-                        isLoadingRevolutApi = false;
-                        if (orderId != null) {
-                            revolutOrderId = orderId;
-                            flow.setOrderToken(revolutOrderId);
-                            flow.attachLifecycle(getLifecycle());
-                            flow.continueConfirmationFlow();
-                        }
-                    });
+                    try {
+                        fetchRevolutApi(orderId -> {
+                            isLoadingRevolutApi = false;
+                            if (orderId != null) {
+                                revolutOrderId = orderId;
+                                flow.setOrderToken(revolutOrderId);
+                                flow.attachLifecycle(getLifecycle());
+                                flow.continueConfirmationFlow();
+                            }
+                        });
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     if (isLoadingRevolutApi) {
                         Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
                     }
@@ -204,10 +220,16 @@ public class MainActivity extends AppCompatActivity {
         isLoadingRevolutApi = false;
     }
 
-    private void fetchRevolutApi(ApiLoadCallback callback) {
+    private void fetchRevolutApi(ApiLoadCallback callback) throws Exception {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
+
+        boolean isSecretPresent = !BuildConfig.REVOLUT_MERCHANT_API_KEY.equals(revolutApiKeys.getPublicKey());
+
         String url = BuildConfig.REVOLUT_API_URL;
+        if (isSecretPresent) {
+            url = BuildConfig.REVOLUT_API_KEYED_URL;
+        }
         // Prepare the request data as key-value pairs
         int amount = 0;
         try {
@@ -229,10 +251,18 @@ public class MainActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-
         String finalRequestData = requestData;
 
+        if (isSecretPresent) {
+            // Encrypt the secretKey using the public key
+            String base64EncryptedSecretKey = RSAEncryption.encrypt(revolutApiKeys.getSecretKey(), readPublicRSA());
+            // Convert the encrypted secretKey to Base64
+            // Modify the existing requestData to include the encrypted secretKey
+            finalRequestData += "&encrypted_secret_key=" + URLEncoder.encode(base64EncryptedSecretKey, "UTF-8");
+        }
+
         handler.postDelayed(timeoutRunnable, 7000);
+        String data = finalRequestData;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     try {
@@ -242,7 +272,8 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("Err", response);
-                        Toast.makeText(this, "Json Exception", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Ensure you entered right keys", Toast.LENGTH_SHORT).show();
+                        isLoadingRevolutApi = false;
                     }
                     handler.removeCallbacks(timeoutRunnable);
                 },
@@ -256,14 +287,18 @@ public class MainActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
-                headers.put("AUTH", BuildConfig.REVOLUT_MERCHANT_API_KEY);
+                if (!isSecretPresent) {
+                    headers.put("AUTH", BuildConfig.REVOLUT_MERCHANT_API_KEY);
+                } else {
+                    headers.put("AUTH", BuildConfig.REVOLUT_AUTH_KEY);
+                }
                 return headers;
             }
 
             @Override
             public byte[] getBody() throws AuthFailureError {
                 try {
-                    return finalRequestData.getBytes("UTF-8");
+                    return data.getBytes("UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     return null;
@@ -315,5 +350,54 @@ public class MainActivity extends AppCompatActivity {
         stringRequest.setShouldCache(false);
         queue.add(stringRequest);
         queue.getCache().remove(url);
+    }
+
+    private void loadPreferences() {
+        // Initialize SharedPreferences and Gson
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        Gson gson = new Gson();
+
+        // Load the YourObject instance from SharedPreferences
+        String json = sharedPreferences.getString("keysBundle", "");
+        KeysBundle savedKeysBundle = gson.fromJson(json, KeysBundle.class);
+        json = sharedPreferences.getString("lastUsedKey", "");
+        String lastUsedKey = gson.fromJson(json, String.class);
+        if (savedKeysBundle != null) {
+            revolutApiKeys = savedKeysBundle.getKeys().stream()
+                    .filter(x -> x.getPublicKey().equals(lastUsedKey))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    public String readPublicRSA() {
+        try {
+            // Get the InputStream for the raw resource
+            InputStream publicKeyInputStream = getResources().openRawResource(R.raw.public_key);
+
+            // Read the public key content from the InputStream
+            InputStreamReader inputStreamReader = new InputStreamReader(publicKeyInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder publicKeyStringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                publicKeyStringBuilder.append(line);
+            }
+
+            // Close the streams
+            bufferedReader.close();
+            inputStreamReader.close();
+            publicKeyInputStream.close();
+
+            // Get the public key string
+            String publicKeyStr = publicKeyStringBuilder.toString();
+            Log.d("PublicKey", publicKeyStr); // Print the key for debugging
+            // Now you have the public key string to use for encryption
+            // ...
+            return publicKeyStr.trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
