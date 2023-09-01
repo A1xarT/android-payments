@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         RevolutPayButton revolutButton = findViewById(R.id.revolut_pay_button);
         RevolutPay revolutPay = RevolutPayExtensionsKt.getRevolutPay(RevolutPayments.INSTANCE);
         Uri returnUri = new Uri.Builder().scheme("scheme1").authority("host").build();
-        revolutPay.init(RevolutPayEnvironment.MAIN, returnUri, public_key, false, null);
+        revolutPay.init(RevolutPayEnvironment.SANDBOX, returnUri, public_key, false, null);
         RevolutPayButtonController controller = createController(revolutButton);
         controller.setHandler(flow -> {
             if (revolutOrderId != null) {
