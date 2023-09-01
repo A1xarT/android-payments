@@ -19,7 +19,7 @@ public class StartScreenActivity extends AppCompatActivity {
         });
         ImageView changeMerchantKeyButton = findViewById(R.id.merchant_key);
         changeMerchantKeyButton.setOnClickListener(v -> {
-            Intent intent = new Intent(StartScreenActivity.this, MerchantKeyScreen.class);
+            Intent intent = new Intent(StartScreenActivity.this, MerchantKeyScreenActivity.class);
             startActivity(intent);
         });
     }

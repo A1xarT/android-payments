@@ -1,4 +1,6 @@
-package com.example.AndroidPaymentApp;
+package com.example.AndroidPaymentApp.models;
+
+import com.example.AndroidPaymentApp.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;

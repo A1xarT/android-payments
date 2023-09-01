@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,6 +22,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.AndroidPaymentApp.models.KeysBundle;
+import com.example.AndroidPaymentApp.models.KeysEntity;
+import com.example.AndroidPaymentApp.security.RSAEncryption;
 import com.google.gson.Gson;
 import com.revolut.revolutpay.api.OrderResultCallback;
 import com.revolut.revolutpay.api.RevolutPay;
@@ -46,7 +48,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -166,8 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onOrderFailed(@NonNull Throwable throwable) {
-                onBackPressed();
                 revolutOrderId = null;
+                onBackPressed();
             }
         });
 
@@ -224,8 +225,7 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.getCache().clear();
 
-        boolean isSecretPresent = !BuildConfig.REVOLUT_MERCHANT_API_KEY.equals(revolutApiKeys.getPublicKey());
-
+        boolean isSecretPresent = revolutApiKeys != null && !BuildConfig.REVOLUT_MERCHANT_API_KEY.equals(revolutApiKeys.getPublicKey());
         String url = BuildConfig.REVOLUT_API_URL;
         if (isSecretPresent) {
             url = BuildConfig.REVOLUT_API_KEYED_URL;
@@ -353,20 +353,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadPreferences() {
-        // Initialize SharedPreferences and Gson
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        Gson gson = new Gson();
 
-        // Load the YourObject instance from SharedPreferences
-        String json = sharedPreferences.getString("keysBundle", "");
-        KeysBundle savedKeysBundle = gson.fromJson(json, KeysBundle.class);
-        json = sharedPreferences.getString("lastUsedKey", "");
-        String lastUsedKey = gson.fromJson(json, String.class);
-        if (savedKeysBundle != null) {
-            revolutApiKeys = savedKeysBundle.getKeys().stream()
-                    .filter(x -> x.getPublicKey().equals(lastUsedKey))
-                    .findFirst()
-                    .orElse(null);
+        try {
+            // Initialize SharedPreferences and Gson
+            SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            Gson gson = new Gson();
+
+            // Load the YourObject instance from SharedPreferences
+            String json = sharedPreferences.getString("keysBundle", "");
+            KeysBundle savedKeysBundle = gson.fromJson(json, KeysBundle.class);
+            json = sharedPreferences.getString("lastUsedKey", "");
+            String lastUsedKey = gson.fromJson(json, String.class);
+            if (savedKeysBundle != null) {
+                revolutApiKeys = savedKeysBundle.getKeys().stream()
+                        .filter(x -> x.getPublicKey().equals(lastUsedKey))
+                        .findFirst()
+                        .orElse(null);
+            }
+        } catch (Exception ex) {
+            revolutApiKeys = null;
         }
     }
 

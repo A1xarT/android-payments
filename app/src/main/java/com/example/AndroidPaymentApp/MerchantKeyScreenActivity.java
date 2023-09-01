@@ -14,13 +14,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.AndroidPaymentApp.models.KeysBundle;
+import com.example.AndroidPaymentApp.models.KeysEntity;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MerchantKeyScreen extends AppCompatActivity {
+public class MerchantKeyScreenActivity extends AppCompatActivity {
     public static String currentPublicKey = BuildConfig.REVOLUT_MERCHANT_API_KEY;
     public static KeysBundle keysBundle;
 
@@ -86,6 +88,7 @@ public class MerchantKeyScreen extends AppCompatActivity {
         // Initialize SharedPreferences and Gson
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         Gson gson = new Gson();
+
         // Load the YourObject instance from SharedPreferences
         String json = sharedPreferences.getString("keysBundle", "");
         KeysBundle savedKeysBundle = gson.fromJson(json, KeysBundle.class);
@@ -121,7 +124,7 @@ public class MerchantKeyScreen extends AppCompatActivity {
                 // Create a list of options
                 final String[] options = keysBundle.getPublicKeys().toArray(new String[0]);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(MerchantKeyScreen.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MerchantKeyScreenActivity.this);
                 builder.setTitle("Select an option");
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
@@ -152,6 +155,5 @@ public class MerchantKeyScreen extends AppCompatActivity {
             currentPublicKey = BuildConfig.REVOLUT_MERCHANT_API_KEY;
         }
         keysBundle.initDefaultPair(new KeysEntity(BuildConfig.REVOLUT_MERCHANT_API_KEY, "hidden"));
-
     }
 }

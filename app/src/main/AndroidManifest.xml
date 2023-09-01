@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MerchantKeyScreen"
+            android:name=".MerchantKeyScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

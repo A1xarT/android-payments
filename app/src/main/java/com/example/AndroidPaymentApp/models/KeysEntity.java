@@ -1,4 +1,4 @@
-package com.example.AndroidPaymentApp;
+package com.example.AndroidPaymentApp.models;
 
 import java.util.Objects;
 
