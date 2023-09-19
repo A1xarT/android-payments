@@ -7,7 +7,7 @@
 
         <!-- Defining that new color in ColorPrimaryDark -->
         <item name="colorPrimaryDark">@color/colorAccent</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">#333333</item>
     </style>
     <style name="HeaderText">
         <item name="android:textScaleX">2</item>
